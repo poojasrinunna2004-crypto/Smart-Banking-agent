@@ -1,28 +1,20 @@
 # Smart Banking Support Agent
 
-A Python project demonstrating a single tool-calling banking assistant built with LangChain, LangGraph, FastAPI, and SQLite.
+A Python project demonstrating a single tool-calling banking assistant with a responsive loan-planning interface, built with LangChain, LangGraph, FastAPI, and SQLite.
 
 ## Scenario
 
 A customer requests a personal loan application. The agent must:
 
-- parse the request for loan details
-- calculate EMI
-- verify eligibility
-- retrieve account information
-- ask for missing information if needed
-- require explicit confirmation before submitting the application
-- summarize the final result
 
 ## Features
 
-- Single model-driven agent using LangChain tool calling when `OPENAI_API_KEY` is configured
-- Offline deterministic mode when no model key is configured
+- Responsive loan planning screen with estimate, eligibility, account details, and explicit submission confirmation
 - FastAPI endpoints for support and submission
 - Mock customer account data
 - Loan applications persisted in SQLite
 - Example request matching the banking scenario
-
+- http://127.0.0.1:8000/ for the loan planning interface
 ## Setup
 
 ```powershell
@@ -43,6 +35,11 @@ Then open:
 
 ## Example API call
 
+│   ├── static/
+│   │   ├── app.js
+│   │   └── styles.css
+│   ├── templates/
+│   │   └── index.html
 ```powershell
 Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/banking/support `
   -ContentType 'application/json' `

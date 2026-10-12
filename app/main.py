@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from app.agent import handle_banking_request
@@ -32,11 +36,13 @@ app = FastAPI(
     description="Single-agent banking assistant using LangChain tools and FastAPI.",
     version="1.0.0",
 )
+APP_DIR = Path(__file__).resolve().parent
+app.mount("/static", StaticFiles(directory=APP_DIR / "static"), name="static")
 
 
 @app.get("/")
-def root() -> dict[str, str]:
-    return {"message": "Smart Banking Support Agent is running."}
+def root() -> FileResponse:
+    return FileResponse(APP_DIR / "templates" / "index.html")
 
 
 @app.get("/health")

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f3f6f1">
+    <title>Loan planning | Smart Banking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="/" aria-label="Smart Banking home">
+            <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="brand-name">smart<span>banking</span></span>
+        </a>
+        <div class="topbar-meta">
+            <span class="environment-tag"><span class="environment-dot"></span> SAMPLE ENVIRONMENT</span>
+            <a class="api-link" href="/docs">API docs <span aria-hidden="true">↗</span></a>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="page-heading" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow"><span class="eyebrow-line"></span> PERSONAL LENDING</p>
+                <h1 id="page-title">Loan planning</h1>
+                <p class="page-description">A clear estimate, eligibility check, and application flow in one place.</p>
+            </div>
+            <div class="assumption-note">
+                <span class="assumption-icon" aria-hidden="true">i</span>
+                <span>Sample rate <strong>12% p.a.</strong><br>Eligibility cap <strong>40% of salary</strong></span>
+            </div>
+        </section>
+
+        <div class="workspace-grid">
+            <form class="details-panel" id="loan-form">
+                <div class="panel-heading">
+                    <div>
+                        <p class="step-label">01 <span>/</span> YOUR DETAILS</p>
+                        <h2>Personal loan</h2>
+                    </div>
+                    <span class="currency-label">INR <span aria-hidden="true">⌄</span></span>
+                </div>
+
+                <div class="field-grid">
+                    <label class="field field-wide" for="customer-id">
+                        <span>Customer ID</span>
+                        <input id="customer-id" name="customer_id" type="text" value="CUST-1001" required
+                            autocomplete="off">
+                    </label>
+                    <label class="field" for="loan-amount">
+                        <span>Loan amount</span>
+                        <span class="input-wrap"><span class="input-prefix">₹</span><input id="loan-amount"
+                                name="loan_amount" type="number" min="1" step="1000" value="500000" required
+                                inputmode="numeric"></span>
+                    </label>
+                    <label class="field" for="tenure-months">
+                        <span>Tenure</span>
+                        <span class="input-wrap"><input id="tenure-months" name="tenure_months" type="number" min="1"
+                                max="360" value="36" required inputmode="numeric"><span
+                                class="input-suffix">months</span></span>
+                    </label>
+                    <label class="field" for="monthly-salary">
+                        <span>Monthly salary</span>
+                        <span class="input-wrap"><span class="input-prefix">₹</span><input id="monthly-salary"
+                                name="monthly_salary" type="number" min="1" step="1000" value="60000" required
+                                inputmode="numeric"></span>
+                    </label>
+                    <label class="field" for="existing-emi">
+                        <span>Existing monthly EMI</span>
+                        <span class="input-wrap"><span class="input-prefix">₹</span><input id="existing-emi"
+                                name="existing_emi" type="number" min="0" step="500" value="5000" required
+                                inputmode="numeric"></span>
+                    </label>
+                </div>
+
+                <button class="primary-button" id="calculate-button" type="submit">
+                    <span>Calculate my estimate</span><span class="button-arrow" aria-hidden="true">→</span>
+                </button>
+                <p class="form-footnote"><span class="lock-mark" aria-hidden="true">●</span> Demo data only. No credit
+                    decision is made.</p>
+            </form>
+
+            <section class="result-panel" aria-labelledby="result-title" aria-live="polite" aria-busy="false"
+                id="result-panel">
+                <div class="result-heading">
+                    <div>
+                        <p class="step-label step-label-light">02 <span>/</span> YOUR ESTIMATE</p>
+                        <h2 id="result-title">Monthly overview</h2>
+                    </div>
+                    <span class="result-state" id="result-state"><span class="state-dot"></span> READY</span>
+                </div>
+
+                <div class="emi-block">
+                    <p>ESTIMATED MONTHLY EMI</p>
+                    <strong id="monthly-emi">₹—</strong>
+                    <span id="term-caption">Your estimate will appear here</span>
+                </div>
+
+                <dl class="result-list">
+                    <div class="result-row">
+                        <dt>Eligibility</dt>
+                        <dd id="eligibility-value">Waiting for details</dd>
+                    </div>
+                    <div class="result-row">
+                        <dt>Total monthly EMIs</dt>
+                        <dd id="total-emi-value">—</dd>
+                    </div>
+                    <div class="result-row">
+                        <dt>Salary limit</dt>
+                        <dd id="limit-value">—</dd>
+                    </div>
+                </dl>
+
+                <div class="account-strip" id="account-strip" hidden>
+                    <div class="account-avatar" aria-hidden="true">01</div>
+                    <div class="account-copy">
+                        <span class="account-kicker">MOCK ACCOUNT</span>
+                        <strong id="account-name">Account details</strong>
+                        <span id="account-meta"></span>
+                    </div>
+                    <span class="account-balance" id="account-balance"></span>
+                </div>
+
+                <p class="response-message" id="response-message">Enter your details to see the estimate and account
+                    information.</p>
+
+                <div class="confirmation-block" id="confirmation-block" hidden>
+                    <p class="confirmation-title">Review before you submit</p>
+                    <label class="consent-label" for="consent-check">
+                        <input id="consent-check" type="checkbox">
+                        <span>I have reviewed this estimate and want to submit the loan application.</span>
+                    </label>
+                    <button class="confirm-button" id="confirm-button" type="button" disabled>
+                        <span>Confirm and submit</span><span aria-hidden="true">→</span>
+                    </button>
+                </div>
+
+                <p class="disclaimer">Estimates use a representative 12% annual rate and a sample eligibility rule.
+                    Actual bank terms may differ.</p>
+            </section>
+        </div>
+
+        <footer class="page-footer">
+            <span>SMART BANKING <span class="footer-divider">/</span> SUPPORT</span>
+            <span>Secure review <span class="footer-dot">·</span> Explicit confirmation required</span>
+        </footer>
+    </main>
+</body>
+
+</html>

@@ -32,6 +32,14 @@ class SmartBankingAgentTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.client.close()
 
+    def test_homepage_serves_the_banking_interface(self) -> None:
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Loan planning", response.content)
+        self.assertEqual(self.client.get("/static/styles.css").status_code, 200)
+        self.assertEqual(self.client.get("/static/app.js").status_code, 200)
+
     def test_handle_banking_request_requires_confirmation(self) -> None:
         result = handle_banking_request(SAMPLE_REQUEST)
 
