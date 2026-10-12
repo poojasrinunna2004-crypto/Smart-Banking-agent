@@ -1,93 +1,70 @@
 # Smart Banking Support Agent
 
-A Python project demonstrating a single tool-calling banking assistant with a responsive loan-planning interface, built with LangChain, LangGraph, FastAPI, and SQLite.
-
-## Scenario
-
-A customer requests a personal loan application. The agent must:
-
+A single-agent banking support demo built with Python, LangChain, LangGraph, FastAPI, and SQLite. The app includes a responsive loan-planning interface and mock banking tools.
 
 ## Features
 
-- Responsive loan planning screen with estimate, eligibility, account details, and explicit submission confirmation
-- FastAPI endpoints for support and submission
-- Mock customer account data
-- Loan applications persisted in SQLite
-- Example request matching the banking scenario
-- http://127.0.0.1:8000/ for the loan planning interface
-## Setup
+- EMI calculation and sample eligibility check
+- Mock customer account lookup
+- Loan application submission protected by explicit confirmation
+- Responsive browser interface and JSON API
+- SQLite storage for sample accounts and applications
+- LLM-based tool selection when `OPENAI_API_KEY` is configured; offline deterministic mode otherwise
+
+The demo uses a representative 12% annual interest rate and a 40% salary-to-EMI limit. These are sample assumptions, not real bank terms or a credit decision.
+
+## Run locally
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 Copy-Item .env.example .env
-# Set OPENAI_API_KEY in .env to enable model-driven tool selection.
-uvicorn app.main:app --reload
+# Set OPENAI_API_KEY in .env only if you want model-driven tool selection.
+python -m uvicorn app.main:app --reload
 ```
 
-Without an API key, the app uses the deterministic workflow so the mock API and tests can run offline. The sample uses a 12% annual EMI rate and a 40% salary cap; these are demonstration assumptions, not bank terms.
+Open `http://127.0.0.1:8000/` for the interface or `http://127.0.0.1:8000/docs` for the API.
 
-Then open:
-
-- http://127.0.0.1:8000/
-- http://127.0.0.1:8000/docs
-
-## Example API call
-
-│   ├── static/
-│   │   ├── app.js
-│   │   └── styles.css
-│   ├── templates/
-│   │   └── index.html
-```powershell
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/banking/support `
-  -ContentType 'application/json' `
-  -Body '{"request":"I want to apply for a personal loan of ₹5,00,000 for three years. My monthly salary is 60,000, and I already pay 5,000 as an EMI. Calculate my EMI, check my eligibility, retrieve my account details, and help me submit the application if I qualify."}'
-```
-
-## Example confirmation call
-
-First review the support response and obtain the customer's explicit confirmation. Only then make this second call:
-
-```powershell
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/banking/applications `
-  -ContentType 'application/json' `
-  -Body '{"loan_amount":500000,"tenure_months":36,"monthly_salary":60000,"existing_emi":5000,"confirmed":true}'
-```
-
-The agent's submission tool receives confirmation and customer identity from server-side graph state, not from model-generated tool arguments. The applications endpoint also rejects requests where `confirmed` is false.
-
-## Run tests
+## Tests
 
 ```powershell
 python -m unittest discover -s tests -v
 ```
 
+## Deploy to Render
+
+The repository includes a root-level `render.yaml` Blueprint. In Render, choose **New + → Blueprint**, connect `poojasrinunna2004-crypto/Smart-Banking-agent`, and deploy the `main` branch. Keep the root directory blank so Render can find `requirements.txt` and `render.yaml`.
+
+The Blueprint sets the Python version, installs `requirements.txt`, starts Uvicorn on Render's assigned `$PORT`, and checks `/health`. Add `OPENAI_API_KEY` in the Render service's Environment settings only if you want LLM-based tool selection; do not put the key in GitHub or `render.yaml`.
+
+After deployment, open the service URL for the interface, `/docs` for API testing, or `/health` to check service status.
+
 ## Deploy to Railway
 
-1. Push this repository to GitHub and create a Railway project from that repository.
-2. Add `OPENAI_API_KEY` as a Railway service variable to enable model-driven tool selection. It can be omitted to use the offline deterministic workflow.
-3. Deploy the service. Railway uses the root `Procfile` to bind Uvicorn to its assigned port.
-4. Open the generated Railway domain and append `/docs` to try the API.
+The root `Procfile` also provides the Uvicorn start command for Railway. Connect the GitHub repository and deploy its `main` branch.
 
-The SQLite database is local to the service by default. Railway's local filesystem is not durable across redeploys; attach a persistent volume and configure the database path before relying on stored applications beyond this demonstration.
+SQLite files are stored on the service's local filesystem. Platform redeploys may not preserve them; use persistent storage or a managed database before relying on application records.
 
 ## Project structure
 
 ```text
 smart-banking-agent/
 ├── app/
-│   ├── __init__.py
 │   ├── agent.py
+│   ├── database.py
 │   ├── db.py
 │   ├── main.py
-│   └── tools.py
+│   ├── models.py
+│   ├── static/
+│   │   ├── app.js
+│   │   └── styles.css
+│   └── templates/
+│       └── index.html
 ├── tests/
 │   └── test_agent.py
 ├── .env.example
-├── .gitignore
-├── README.md
-├── requirements.txt
-└── .venv/
+├── Procfile
+├── render.yaml
+└── requirements.txt
 ```
